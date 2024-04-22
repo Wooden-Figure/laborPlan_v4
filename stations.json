@@ -1,0 +1,15 @@
+{
+  "harvest": 1,
+  "AP testing": 2,
+  "AP repair": 3,
+  "switch testing": 4,
+  "switch sanitization": 4,
+  "optics testing": 3,
+  "optics receiving": 2,
+  "AP sort": 3,
+  "AP prepceive": 4,
+  "DIMM sort": 2,
+  "shipping": 4,
+  "GPU": 2,
+  "switch receiving": 3
+}
