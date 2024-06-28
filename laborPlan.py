@@ -1,4 +1,6 @@
 import copy
+import traceback
+
 from data_model import *
 import multiprocessing
 from gui import Ui_MainWindow
@@ -27,7 +29,7 @@ def read_json(config_file):
         print(traceback.format_exc())
 
 
-header = ["id", "Name", "Last Worked", "Status"]
+header = ["id", "Last Name", "First Name", "Last Worked", "Status"]
 
 
 class Application(QMainWindow, Ui_MainWindow):
@@ -66,6 +68,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
             self.new_employee_mode = False
 
+
         except Exception as e:
             print("Exception in init: {}".format(str(e)))
             print(traceback.format_exc())
@@ -96,24 +99,29 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def random_labor(self):
         """
-        build a random labor plan based on the stations limits
+        build a random labor based on the stations limits
         :return:
         """
         reply = QMessageBox.question(self, 'Message',
                                      "Are you sure you want to reset all the assignments and create a random labor?",
                                      QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
+
         if reply == QMessageBox.Yes:
+            assigned = []
             data_layer.reset_labor()
             stations = read_json('stations.json')
             for station, limit in stations.items():
-                available = list(data_layer.select_trained_available_employee(station).tolist())
+                available = [x for x in list(data_layer.select_trained_available_employee(station).tolist()) if x not in assigned]
                 n = limit
                 # declaring list
                 if n < len(available):
                     selection = random.sample(available, n)
                 else:
                     selection = available
+                for x in selection:
+                    assigned.append(x)
+
                 for employee in selection:
                     data_layer.assign_employee_by_id(data_layer.select_employee_id_by_name(employee), station, True)
             self.update_labor_db(self.station_tb.toPlainText())
@@ -155,7 +163,9 @@ class Application(QMainWindow, Ui_MainWindow):
         """
         self.employee_cb.clear()
         employees = list(data_layer.select_all_employee())
+        employees.sort()
         employees.insert(0, 'select employee...')
+
         self.employee_cb.addItems(employees)
         self.station_cb.clear()
         self.stations = list(read_json("stations.json").keys())
@@ -167,6 +177,7 @@ class Application(QMainWindow, Ui_MainWindow):
         if self.station_tb.toPlainText():
             self.available_empl_cb.clear()
             available = list(data_layer.select_trained_available_employee(self.station_tb.toPlainText()).tolist())
+            available.sort()
             available.insert(0, 'select valid employee...')
             self.available_empl_cb.addItems(available)
 
@@ -175,6 +186,9 @@ class Application(QMainWindow, Ui_MainWindow):
         save the new or updated employee
         :return:
         """
+        if ',' not in self.name_tb.text() or self.name_tb.text().count(',') > 1:
+            self.alert("Please enter Last Name and First Name single comma separated.")
+            return
         if not self.new_employee_mode:
             empl_id = int(self.get_current_employee_id())
             data_layer.update_employee_name(empl_id, self.name_tb.text())
@@ -220,7 +234,7 @@ class Application(QMainWindow, Ui_MainWindow):
         self.new_employee_mode = True
         self.name_tb.clear()
         self.set_state("edit")
-        self.name_label.setText("The new employee name:")
+        self.name_label.setText("The new employee\n(Last Name,First Name):")
 
     def save_changes_training(self):
         """
@@ -251,7 +265,7 @@ class Application(QMainWindow, Ui_MainWindow):
         self.new_mode = False
         self.new_employee_mode = False
         self.name_tb.clear()
-        self.name_label.setText("ID:(), NAME:")
+        self.name_label.setText("ID:(), LAST NAME,FIRST NAME")
 
         self.update_labor_db(schedule.text())
         self.station_tb.setText(schedule.text().split(' |')[0])
@@ -265,12 +279,28 @@ class Application(QMainWindow, Ui_MainWindow):
         :return:
         """
         try:
-
+            print('update_labor_db')
             station = station.split(' | ')[0]
             self.new_mode = False
             assigned_empls = data_layer.select_all_assigned_by_station(station)
             self.globals_labor_df = assigned_empls
+            print('1')
+
+            self.globals_labor_df['last name'] = ''
+            if len(self.globals_labor_df) > 0:
+                self.globals_labor_df['name'] = self.globals_labor_df['name'].apply(lambda x: x + ',' if ',' not in x else x)
+                self.globals_labor_df[['last name', 'name']] =  self.globals_labor_df['name'].str.split(',', expand=True)
+
+            self.globals_labor_df = self.globals_labor_df[['employee_id', 'last name', 'name', 'last_worked', 'status']]
+            print('3')
+            self.globals_labor_df = self.globals_labor_df.sort_values("last name")
+
+            print('4')
+            print(self.globals_labor_df)
+            print(header)
             self.globals_labor_df.columns = header
+            print('2')
+            print(self.globals_labor_df)
             self.model = pandasModel(self.globals_labor_df)
             self.tableView_labor.setModel(self.model)
             self.tableView_labor.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -279,6 +309,7 @@ class Application(QMainWindow, Ui_MainWindow):
             self.update_combo_boxes()
 
         except Exception as e:
+            print(traceback.format_exc())
             self.log("Exception in update_posts_db: {}".format(str(e)))
 
     def update_stations_list(self):
@@ -287,6 +318,8 @@ class Application(QMainWindow, Ui_MainWindow):
         :return:
         """
         schedules = read_json("stations.json")
+        schedules = {key: value for key, value in sorted(schedules.items())}
+
         schedules_data = []
         self.stations = []
         for k, v in schedules.items():
@@ -300,7 +333,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def get_current_employee_id(self):
         """
-        returns an ID of the current employee selected
+        returns an ID of the current empl selected
         :return:
         """
         try:
@@ -315,7 +348,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def get_current_employee_name(self):
         """
-        returns Name of the current employee selected
+        returns Name of the current empl selected
         :return:
         """
         try:
@@ -324,7 +357,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
             if df_rows == []:
                 return False
-            employee_id = [self.globals_labor_df.iloc[i]['Name'] for i in df_rows][0]
+            employee_id = [self.globals_labor_df.iloc[i]['Last Name'] + ',' + self.globals_labor_df.iloc[i]['First Name'] for i in df_rows][0]
             return employee_id
         except Exception as e:
             self.log("Exception in get_current_employee_name: {}".format(str(e)))
@@ -339,7 +372,7 @@ class Application(QMainWindow, Ui_MainWindow):
         employee_id = self.get_current_employee_id()
         self.new_employee_mode = False
         self.name_tb.clear()
-        self.name_label.setText("ID:({}), NAME:".format(employee_id))
+        self.name_label.setText("ID:({}), LAST NAME,FIRST NAME:".format(employee_id))
         self.name_tb.setText(employee_name)
 
     def set_site_policy(self, initial=False):
