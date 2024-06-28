@@ -235,6 +235,7 @@ class Application(QMainWindow, Ui_MainWindow):
         self.name_tb.clear()
         self.set_state("edit")
         self.name_label.setText("The new employee\n(Last Name,First Name):")
+        // Robert is employee # 1 :)
 
     def save_changes_training(self):
         """
