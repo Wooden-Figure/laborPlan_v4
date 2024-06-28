@@ -141,8 +141,8 @@ class Ui_MainWindow(object):
         self.name_label = QtWidgets.QLabel(self.centralwidget)
         self.name_label.setFont(font)
         self.name_label.setObjectName("label_24")
-        self.name_label.setText("ID:(), NAME:")
-        self.name_label.setMaximumHeight(25)
+        self.name_label.setText("ID:(), LAST NAME,FIRST NAME:")
+        self.name_label.setMaximumHeight(45)
         self.gridLayout.addWidget(self.name_label, 1, 14, 1, 1)
 
         self.name_tb = QtWidgets.QLineEdit(self.centralwidget)
@@ -257,7 +257,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        MainWindow.setWindowTitle(_translate("MainWindow", "Labor Plan v4"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Labor Plan v5"))
         self.export_to_excel.setText(_translate("MainWindow", "Export to Excel"))
         self.import_from_excel.setText(_translate("MainWindow", "Import from Excel"))
         self.new_employee_btn.setText(_translate("MainWindow", "New Employee"))
