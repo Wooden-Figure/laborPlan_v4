@@ -142,7 +142,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def delete_employee(self):
         """
-        completely delete an employee
+        completely delete and employee
         :return:
         """
         current_id = self.get_current_employee_id()
@@ -235,7 +235,6 @@ class Application(QMainWindow, Ui_MainWindow):
         self.name_tb.clear()
         self.set_state("edit")
         self.name_label.setText("The new employee\n(Last Name,First Name):")
-        // Robert is employee # 1 :)
 
     def save_changes_training(self):
         """
@@ -294,6 +293,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
             self.globals_labor_df = self.globals_labor_df[['employee_id', 'last name', 'name', 'last_worked', 'status']]
             print('3')
+            # sorts everything by last name
             self.globals_labor_df = self.globals_labor_df.sort_values("last name")
 
             print('4')
@@ -349,7 +349,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def get_current_employee_name(self):
         """
-        returns Name of the current empl selected
+        returns a Name of the current empl selected
         :return:
         """
         try:
