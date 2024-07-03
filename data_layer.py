@@ -295,7 +295,7 @@ def update_employee_name(employee_id, new_name):
 
 def reset_labor():
     """
-    reset a labor (set all the employees to not assigned)
+    reset labor (set all the employees to not assigned)
     :return:
     """
     try:
@@ -350,7 +350,7 @@ def import_from_excel(file_name):
             return
         df = pd.read_excel(file_name)
         if any(x not in df.columns for x in ["Employee ID", "Station", "Last Worked"]):
-            print("Excel column names seems to be wrong")
+            print("Excel column names seem to be wrong")
             return
         else:
             for index, row in df.iterrows():
@@ -364,3 +364,4 @@ def import_from_excel(file_name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     init_database()
+
