@@ -9,11 +9,13 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 
-# sources for GUI
-# https://biapol.github.io/blog/johannes_mueller/entry_user_interf2/Readme.html?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
-# https://stackoverflow.com/questions/68316364/pyqt5-qgraphicsview-width-and-height?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
-# https://gist.github.com/trin94/0b61a7476f276c1f7648172d950041a5?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
-# https://stackoverflow.com/questions/52797269/having-trouble-opening-multiple-windows-in-pyqt5?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
+"""
+sources for GUI
+https://biapol.github.io/blog/johannes_mueller/entry_user_interf2/Readme.html?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
+https://stackoverflow.com/questions/68316364/pyqt5-qgraphicsview-width-and-height?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
+https://gist.github.com/trin94/0b61a7476f276c1f7648172d950041a5?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
+https://stackoverflow.com/questions/52797269/having-trouble-opening-multiple-windows-in-pyqt5?_gl=1*zwtvqf*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3Nzk5OS4wLjAuMA..
+"""
 
 """
 that's a GUI code, adaptive, based on Grids
