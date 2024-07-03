@@ -21,9 +21,12 @@ from PyQt5.QtCore import QAbstractTableModel, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView
 import shutil
 
-# sources
-# https://www.pythonguis.com/faq/editing-pyqt-tableview/?_gl=1*1wewnq0*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3ODMyMS4wLjAuMA..
-# https://stackoverflow.com/questions/75444012/how-to-only-update-the-data-that-has-changed-in-qtableview-python?_gl=1*1wewnq0*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3ODMyMS4wLjAuMA..
+""""" 
+sources
+https://www.pythonguis.com/faq/editing-pyqt-tableview/?_gl=1*1wewnq0*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3ODMyMS4wLjAuMA..
+https://stackoverflow.com/questions/75444012/how-to-only-update-the-data-that-has-changed-in-qtableview-python?_gl=1*1wewnq0*_gcl_au*MTA2NDgyNTg0OS4xNzEzNjMyNjcz*_ga*MTIzMDQ0MjYwMy4xNzEzNjMyNjY3*_ga_MBTGG7KX5Y*MTcxOTg3Nzc5Mi40LjEuMTcxOTg3ODMyMS4wLjAuMA..
+"""
+
 
 class pandasModel(QAbstractTableModel):
     """
