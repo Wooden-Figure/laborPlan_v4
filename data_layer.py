@@ -28,6 +28,7 @@ def init_database():
     """
     try:
         if not os.path.exists('database.db'):
+            # if the database doesn't exist (or is deleted), it is created w/ this
             connection = sqlite3.connect('database.db')
             with open('schema.sql') as f:
                 res = connection.executescript(f.read())
@@ -44,7 +45,7 @@ def remove_employee_by_id(employee_id):
     """
     try:
         if not employee_id or employee_id is None:
-            print("No employee detected to remove")
+            print("No builder detected to remove")
             return
         conn, cursor = get_connection()
         sql = 'DELETE FROM employee WHERE id={}'.format(employee_id)
@@ -71,7 +72,7 @@ def assign_employee_by_id(employee_id, station, assign):
         result = pd.read_sql_query(
             'SELECT * FROM plan WHERE employee_id="{}" and station="{}"'.format(employee_id, station), conn)
         if len(result) == 0:
-            print('Employee is not trained for this station')
+            print('Builder is not trained for this station')
             conn.commit()
             conn.close()
             return None
@@ -210,7 +211,7 @@ def select_employee_id_by_name(name):
         conn.close()
         return result[0]
     except Exception:
-        print("No employee detected with this name: {}".format(name))
+        print("No Builder detected with this name: {}".format(name))
         return
 
 
@@ -231,7 +232,7 @@ def insert_training(employee_id, station, trained_time):
                 cursor.execute("INSERT INTO plan (employee_id, station, last_worked, assigned) VALUES (?,?,?,?)",
                                (employee_id, station, trained_time, False))
             except Exception:
-                return "Employee with ID {} not found".format(employee_id)
+                return "Builder with ID {} not found".format(employee_id)
         else:
             sql = ''' UPDATE plan SET last_worked = ? WHERE employee_id = ? and station = ?'''
             cursor.execute(sql, (trained_time, employee_id, station))
@@ -254,14 +255,14 @@ def insert_employee(name):
 
         employee_exists = conn.execute('SELECT * FROM employee where name = "{}"'.format(name.strip())).fetchall()
         if employee_exists:
-            print("employee with the name {} exists already!".format(name))
+            print("Builder with the name {} exists already!".format(name))
             conn.commit()
             conn.close()
-            return "employee with the name {} exists already!".format(name)
+            return "Builder with the name {} exists already!".format(name)
         cursor.execute("INSERT INTO employee (name) VALUES (?)", (name,))
         conn.commit()
         conn.close()
-        return "New employee added!"
+        return "New Builder added!"
     except Exception as e:
         print("Exception in insert_employee: {}".format(str(e)))
         print(traceback.format_exc())
@@ -364,4 +365,3 @@ def import_from_excel(file_name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     init_database()
-
