@@ -48,15 +48,18 @@ class Application(QMainWindow, Ui_MainWindow):
             self.setupUi(self)
             self.set_state('start')
 
+            # updates the stations
             self.update_stations_list()
             self.stations = list(read_json("stations.json").keys())
 
+            # connects the UI features to each part it is assigned to
             self.import_from_excel.clicked.connect(self.import_excel)
             self.export_to_excel.clicked.connect(self.export_excel)
             self.tableView_labor.doubleClicked.connect(self.edit_labor)
             self.save_changes_btn.clicked.connect(self.save_changes_training)
             self.save_changes_btn1.clicked.connect(self.save_changes_name)
 
+            # same as above
             self.new_employee_btn.clicked.connect(self.create_new_employee)
             self.stations_list.itemClicked.connect(self.select_station)
             self.confirm_assignment.clicked.connect(self.assign_employee)
@@ -67,7 +70,7 @@ class Application(QMainWindow, Ui_MainWindow):
             self.update_combo_boxes()
 
             self.new_employee_mode = False
-
+            self.new_mode = False
 
         except Exception as e:
             print("Exception in init: {}".format(str(e)))
@@ -78,10 +81,10 @@ class Application(QMainWindow, Ui_MainWindow):
         import the trainings from Excel
         :return:
         """
-        filePath, filters = QtWidgets.QFileDialog.getOpenFileName(
+        filepath, filters = QtWidgets.QFileDialog.getOpenFileName(
             self, 'Please select an Excel file', '', 'Excel (*.xlsx)')
-        if filePath:
-            data_layer.import_from_excel(filePath)
+        if filepath:
+            data_layer.import_from_excel(filepath)
             self.alert("Imported")
 
     def export_excel(self):
@@ -99,11 +102,11 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def random_labor(self):
         """
-        build a random labor based on the stations limits
+        build a random labor based on the stations limits from the JSON file
         :return:
         """
         reply = QMessageBox.question(self, 'Message',
-                                     "Are you sure you want to reset all the assignments and create a random labor?",
+                                     "Are you sure you want to reset all the assignments and create random labor?",
                                      QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
 
@@ -111,8 +114,10 @@ class Application(QMainWindow, Ui_MainWindow):
             assigned = []
             data_layer.reset_labor()
             stations = read_json('stations.json')
+            # ensures builders are not double slotted (unless intentional w/ revoke function)
             for station, limit in stations.items():
-                available = [x for x in list(data_layer.select_trained_available_employee(station).tolist()) if x not in assigned]
+                available = [x for x in list(data_layer.select_trained_available_employee(station).tolist())
+                             if x not in assigned]
                 n = limit
                 # declaring list
                 if n < len(available):
@@ -142,7 +147,7 @@ class Application(QMainWindow, Ui_MainWindow):
 
     def delete_employee(self):
         """
-        completely delete and employee
+        completely delete an employee
         :return:
         """
         current_id = self.get_current_employee_id()
@@ -163,22 +168,23 @@ class Application(QMainWindow, Ui_MainWindow):
         """
         self.employee_cb.clear()
         employees = list(data_layer.select_all_employee())
+        # sorts the builders by alphabetical order
         employees.sort()
-        employees.insert(0, 'select employee...')
+        employees.insert(0, 'Select Builder...')
 
         self.employee_cb.addItems(employees)
         self.station_cb.clear()
         self.stations = list(read_json("stations.json").keys())
 
         stations = copy.deepcopy(self.stations)
-        stations.insert(0, 'select station...')
+        stations.insert(0, 'Select station...')
         self.station_cb.addItems(stations)
 
         if self.station_tb.toPlainText():
             self.available_empl_cb.clear()
             available = list(data_layer.select_trained_available_employee(self.station_tb.toPlainText()).tolist())
             available.sort()
-            available.insert(0, 'select valid employee...')
+            available.insert(0, 'Select valid Builder...')
             self.available_empl_cb.addItems(available)
 
     def save_changes_name(self):
@@ -189,6 +195,7 @@ class Application(QMainWindow, Ui_MainWindow):
         if ',' not in self.name_tb.text() or self.name_tb.text().count(',') > 1:
             self.alert("Please enter Last Name and First Name single comma separated.")
             return
+        # updates the employee when not in new employee mode
         if not self.new_employee_mode:
             empl_id = int(self.get_current_employee_id())
             data_layer.update_employee_name(empl_id, self.name_tb.text())
@@ -211,7 +218,7 @@ class Application(QMainWindow, Ui_MainWindow):
                                              self.station_tb.toPlainText(), True)
             self.update_labor_db(self.station_tb.toPlainText())
         else:
-            self.alert("Please select an employee first")
+            self.alert("Please select a Builder first")
 
     def revoke_employee(self):
         """
@@ -234,7 +241,7 @@ class Application(QMainWindow, Ui_MainWindow):
         self.new_employee_mode = True
         self.name_tb.clear()
         self.set_state("edit")
-        self.name_label.setText("The new employee\n(Last Name,First Name):")
+        self.name_label.setText("The new Builder\n(Last Name,First Name):")
 
     def save_changes_training(self):
         """
@@ -246,19 +253,19 @@ class Application(QMainWindow, Ui_MainWindow):
             station = self.station_cb.currentText()
             date = self.last_worked_tm.date()
             if 'select' in employee or "select" in station:
-                self.alert("Please select an employee and station first")
+                self.alert("Please select a Builder and station first")
             else:
                 res = data_layer.insert_training(data_layer.select_employee_id_by_name(employee), station,
                                                  date.toString('dd-MM-yyyy'))
                 self.alert(res)
                 self.update_combo_boxes()
-
         except Exception as e:
+            print("Exception occurred: {}".format(e))
             print(traceback.format_exc())
 
     def select_station(self, schedule):
         """
-        select new station at the left list
+        select new station on the left
         :param schedule:
         :return:
         """
@@ -288,8 +295,9 @@ class Application(QMainWindow, Ui_MainWindow):
 
             self.globals_labor_df['last name'] = ''
             if len(self.globals_labor_df) > 0:
-                self.globals_labor_df['name'] = self.globals_labor_df['name'].apply(lambda x: x + ',' if ',' not in x else x)
-                self.globals_labor_df[['last name', 'name']] =  self.globals_labor_df['name'].str.split(',', expand=True)
+                self.globals_labor_df['name'] = (
+                    self.globals_labor_df['name'].apply(lambda x: x + ',' if ',' not in x else x))
+                self.globals_labor_df[['last name', 'name']] = self.globals_labor_df['name'].str.split(',', expand=True)
 
             self.globals_labor_df = self.globals_labor_df[['employee_id', 'last name', 'name', 'last_worked', 'status']]
             print('3')
@@ -358,7 +366,8 @@ class Application(QMainWindow, Ui_MainWindow):
 
             if df_rows == []:
                 return False
-            employee_id = [self.globals_labor_df.iloc[i]['Last Name'] + ',' + self.globals_labor_df.iloc[i]['First Name'] for i in df_rows][0]
+            employee_id = [self.globals_labor_df.iloc[i]
+                           ['Last Name'] + ',' + self.globals_labor_df.iloc[i]['First Name'] for i in df_rows][0]
             return employee_id
         except Exception as e:
             self.log("Exception in get_current_employee_name: {}".format(str(e)))
@@ -456,16 +465,23 @@ class Application(QMainWindow, Ui_MainWindow):
             appl.processEvents()
             with open("LOG.txt", "a+") as f:
                 f.write(message + '\n')
-        except Exception:
+        except IOError as io_error:
+            print("IOError in log: {}".format(io_error))
+            print(traceback.format_exc())
+        except Exception as general_error:
+            print("Exception in log: {}".format(general_error))
+            print(traceback.format_exc())
+        """except Exception:
             print("Exception in log: {}".format(str(e)))
             print(traceback.format_exc())
+            """
 
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     # sys.stdout = open("global_log.txt", "w")
     appl = QtWidgets.QApplication(sys.argv)
-    appl.setStyleSheet("QMainWindow {background: '#c5d2e3';}");
+    appl.setStyleSheet("QMainWindow {background: '#c5d2e3';}")
     appl.processEvents()
     form = Application()
     form.show()
